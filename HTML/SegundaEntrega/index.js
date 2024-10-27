@@ -224,11 +224,10 @@ app.post(
   }
 );
 
-/* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   
-  // Consulta el carrito del usuario actual
+  // Consulta los productos del carrito del usuario actual
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
     FROM cart_items AS ci
@@ -237,7 +236,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
     WHERE c.user_id = $1;
   `;
   const cartItems = await sql(query, [userId]);
-  
+
   // Calcula el total
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
