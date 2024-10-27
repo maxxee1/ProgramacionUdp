@@ -228,6 +228,9 @@ app.post(
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   
+  // Verifica el userId
+  console.log('User ID:', userId);
+
   // Consulta los productos del carrito del usuario actual
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
@@ -237,13 +240,23 @@ app.get('/cart', authMiddleware, async (req, res) => {
     WHERE c.user_id = $1;
   `;
   
-  const cartItems = await sql(query, [userId]);
+  try {
+    const cartItems = await sql(query, [userId]);
 
-  // Calcula el total
-  const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    // Verifica qué datos se retornan
+    console.log('Cart Items:', cartItems);
 
-  res.render('carrito', { cartItems, totalAmount });
+    // Calcula el total
+    const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    console.log('Total Amount:', totalAmount);
+
+    res.render('carrito', { cartItems, totalAmount });
+  } catch (error) {
+    console.error('Error al ejecutar la consulta:', error);
+    res.status(500).send('Error en el servidor');
+  }
 });
+
 
 /* ---------- Agregar Producto al Carrito ---------- */
 app.post('/cart/add', authMiddleware, async (req, res) => {
