@@ -226,9 +226,9 @@ app.post(
 
 /* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.id; // Obtenemos el ID del usuario autenticado
   
-  console.log('User ID:', userId);
+  console.log('User ID:', userId); // Debugging: Verificar el ID del usuario
 
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
@@ -240,17 +240,26 @@ app.get('/cart', authMiddleware, async (req, res) => {
   
   try {
     const cartItems = await sql(query, [userId]);
-    console.log('Cart Items:', JSON.stringify(cartItems, null, 2)); // Verifica la estructura de cartItems
+    
+    if (cartItems.length === 0) {
+      // Si no hay items en el carrito, renderizamos un mensaje adecuado
+      return res.render('carrito', { cartItems: [], totalAmount: 0, message: "Tu carrito está vacío." });
+    }
 
+    console.log('Cart Items:', JSON.stringify(cartItems, null, 2)); // Verificar la estructura de los items
+
+    // Calcular el total
     const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     console.log('Total Amount:', totalAmount);
 
+    // Renderizar la vista del carrito, pasando los items y el total
     res.render('carrito', { cartItems, totalAmount });
   } catch (error) {
     console.error('Error al ejecutar la consulta:', error);
     res.status(500).send('Error en el servidor');
   }
 });
+
 
 
 
