@@ -31,14 +31,14 @@
             <tr>
               <td>{{this.name}}</td>
               <td>
-                <form action="/cart_items/update/{{this.id}}" method="POST" class="d-inline">
+                <form id="updateQuantity-{{this.id}}" action="/cart_items/update/{{this.id}}" method="POST" class="d-inline">
                   <input type="number" name="quantity" value="{{this.quantity}}" min="1" class="form-control form-control-sm d-inline w-50">
+                  <button type="submit" class="btn btn-sm btn-primary">Actualizar</button>
                 </form>
               </td>
               <td>${{this.price}}</td>
               <td>${{multiply this.price this.quantity}}</td>
               <td>
-                <button form="updateQuantity" class="btn btn-sm btn-primary">Actualizar</button>
                 <form action="/cart_items/delete/{{this.id}}" method="POST" class="d-inline">
                   <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                 </form>
