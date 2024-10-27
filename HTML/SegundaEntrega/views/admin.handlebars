@@ -32,10 +32,31 @@
   .btn-group .btn {
     margin-right: 5px; /* Espaciado entre botones */
   }
+
+  .warning-box {
+    border: 2px solid #28a745; 
+    background-color: #d4edda; 
+    padding: 15px;  
+    margin: 20px 0; 
+    border-radius: 5px;    
+  }
+
+  .warning-box img {
+    max-width: 100%; 
+    height: auto; 
+  }
 </style>
 
-<p>ERES EL FOKIN ADMIN</p>
-<h1>Eres admin, has ganado {{total}}</h1>
+
+<div class="warning-box">
+  {{#if (lt total 20000)}}
+    <p>¡Advertencia! El total es menor a 20,000 clp, has ganado:  {{total}} clp.</p>
+    <img src="{{#if (lookup images 'imagen_id')}}"{{lookup images 'path'}}{{/if}}" alt="Imagen de advertencia">
+  {{else}}
+    <p>¡Felicidades! Has alcanzado un total de {{total}}</p>
+    <img src="{{#if (lookup images 'otra_imagen_id')}}"{{lookup images 'path'}}{{/if}}" alt="Imagen de celebración">
+  {{/if}}
+</div>
 
 <table class="table table-striped">
   <thead>
