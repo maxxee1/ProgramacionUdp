@@ -1,32 +1,12 @@
-<h1>Tu Carrito</h1>
+<h2>Tu Carrito</h2>
 
-    {{#if cartItems.length}}
-        <h2>Productos en el Carrito</h2>
-        <ul>
-            {{#each cartItems}}
-                <li>
-                    <strong>{{this.name}}</strong> - 
-                    Precio: ${{formatPrice this.price}} - 
-                    Cantidad: {{this.quantity}}
-                    
-                    <!-- Formulario para actualizar la cantidad -->
-                    <form action="/cart/update/{{this.id}}" method="POST" style="display:inline;">
-                        <input type="number" name="quantity" value="{{this.quantity}}" min="1" />
-                        <button type="submit">Actualizar</button>
-                    </form>
-
-                    <!-- Formulario para eliminar el producto -->
-                    <form action="/cart/delete/{{this.id}}" method="POST" style="display:inline;">
-                        <button type="submit">Eliminar</button>
-                    </form>
-                </li>
-            {{/each}}
-        </ul>
-        <p><strong>Total: ${{formatPrice totalAmount}}</strong></p>
-    {{else}}
-        <p>No hay productos en el carrito.</p>
-    {{/if}}
-
-    <a href="/">Volver a la Tienda</a>
-
-     <script src="/js/scripts.js"></script> <!-- Si tienes scripts -->
+{{#if message}}
+  <p>{{message}}</p>
+{{else}}
+  <ul>
+    {{#each cartItems}}
+      <li>{{name}} - {{quantity}} x ${{price}}</li>
+    {{/each}}
+  </ul>
+  <p>Total: ${{totalAmount}}</p>
+{{/if}}
