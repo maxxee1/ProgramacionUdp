@@ -227,16 +227,17 @@ app.post(
 /* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
-  
+
   // Consulta productos del carrito del usuario actual
   const query = `
-    SELECT p.id, p.name, p.price, c.quantity
-    FROM cart AS c
-    JOIN products AS p ON c.product_id = p.id
+    SELECT p.id, p.name, p.price, ci.quantity
+    FROM cart_items AS ci
+    JOIN products AS p ON ci.product_id = p.id
+    JOIN carts AS c ON ci.cart_id = c.id
     WHERE c.user_id = $1;
   `;
   const cartItems = await sql(query, [userId]);
-  
+
   // Calcula el total
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -249,14 +250,27 @@ app.post('/cart/add', authMiddleware, async (req, res) => {
   const productId = req.body.product_id;
   const quantity = req.body.quantity || 1;
 
+  // Verificar si el usuario ya tiene un carrito activo
+  const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
+  let cart = await sql(cartQuery, [userId]);
+
+  // Si no hay carrito, crearlo
+  if (cart.length === 0) {
+    const createCartQuery = `INSERT INTO carts (user_id) VALUES ($1) RETURNING id;`;
+    cart = await sql(createCartQuery, [userId]);
+  }
+  
+  const cartId = cart[0].id;
+
+  // Insertar o actualizar producto en cart_items
   const query = `
-    INSERT INTO cart_items (user_id, product_id, quantity)
+    INSERT INTO cart_items (cart_id, product_id, quantity)
     VALUES ($1, $2, $3)
-    ON CONFLICT (user_id, product_id)
-    DO UPDATE SET quantity = cart.quantity + $3;
+    ON CONFLICT (cart_id, product_id)
+    DO UPDATE SET quantity = cart_items.quantity + $3;
   `;
   
-  await sql(query, [userId, productId, quantity]);
+  await sql(query, [cartId, productId, quantity]);
   res.redirect('/cart');
 });
 
@@ -266,12 +280,17 @@ app.post('/cart/update/:productId', authMiddleware, async (req, res) => {
   const productId = req.params.productId;
   const quantity = req.body.quantity;
 
+  // Consulta para obtener el carrito del usuario
+  const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
+  const cart = await sql(cartQuery, [userId]);
+  const cartId = cart[0].id;
+
   const query = `
-    UPDATE cart SET quantity = $1
-    WHERE user_id = $2 AND product_id = $3;
+    UPDATE cart_items SET quantity = $1
+    WHERE cart_id = $2 AND product_id = $3;
   `;
   
-  await sql(query, [quantity, userId, productId]);
+  await sql(query, [quantity, cartId, productId]);
   res.redirect('/cart');
 });
 
@@ -280,11 +299,16 @@ app.post('/cart/delete/:productId', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const productId = req.params.productId;
 
+  // Consulta para obtener el carrito del usuario
+  const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
+  const cart = await sql(cartQuery, [userId]);
+  const cartId = cart[0].id;
+
   const query = `
-    DELETE FROM cart WHERE user_id = $1 AND product_id = $2;
+    DELETE FROM cart_items WHERE cart_id = $1 AND product_id = $2;
   `;
   
-  await sql(query, [userId, productId]);
+  await sql(query, [cartId, productId]);
   res.redirect('/cart');
 });
 
