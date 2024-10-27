@@ -224,6 +224,7 @@ app.post(
   }
 );
 
+/* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   
@@ -235,6 +236,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
     JOIN products AS p ON ci.product_id = p.id
     WHERE c.user_id = $1;
   `;
+  
   const cartItems = await sql(query, [userId]);
 
   // Calcula el total
