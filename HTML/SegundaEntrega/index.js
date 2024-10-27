@@ -228,10 +228,8 @@ app.post(
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   
-  // Verifica el userId
   console.log('User ID:', userId);
 
-  // Consulta los productos del carrito del usuario actual
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
     FROM cart_items AS ci
@@ -242,11 +240,8 @@ app.get('/cart', authMiddleware, async (req, res) => {
   
   try {
     const cartItems = await sql(query, [userId]);
+    console.log('Cart Items:', JSON.stringify(cartItems, null, 2)); // Verifica la estructura de cartItems
 
-    // Verifica qué datos se retornan
-    console.log('Cart Items:', cartItems);
-
-    // Calcula el total
     const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
     console.log('Total Amount:', totalAmount);
 
@@ -256,6 +251,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
     res.status(500).send('Error en el servidor');
   }
 });
+
 
 
 /* ---------- Agregar Producto al Carrito ---------- */

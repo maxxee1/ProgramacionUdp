@@ -1,13 +1,22 @@
-<h1>Tu Carrito</h1>
-
-<ul>
-  {{#each cartItems}}
-    <li>
-      Producto: {{this.name}} <br>
-      Precio: {{this.price}} <br>
-      Cantidad: {{this.quantity}}
-    </li>
-  {{/each}}
-</ul>
-
-<h2>Total: {{totalAmount}}</h2>
+<% if (cartItems.length > 0) { %>
+    <h2>Productos en el Carrito</h2>
+    <ul>
+        <% cartItems.forEach(item => { %>
+            <li>
+                <strong><%= item.name %></strong> - 
+                Precio: $<%= item.price %> - 
+                Cantidad: <%= item.quantity %>
+                <form action="/cart/update/<%= item.id %>" method="POST">
+                    <input type="number" name="quantity" value="<%= item.quantity %>" min="1" />
+                    <button type="submit">Actualizar</button>
+                </form>
+                <form action="/cart/delete/<%= item.id %>" method="POST">
+                    <button type="submit">Eliminar</button>
+                </form>
+            </li>
+        <% }); %>
+    </ul>
+    <p>Total: $<%= totalAmount %></p>
+<% } else { %>
+    <p>No hay productos en el carrito.</p>
+<% } %>
