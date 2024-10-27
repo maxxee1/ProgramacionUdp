@@ -227,17 +227,17 @@ app.post(
 /* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id;
-
-  // Consulta productos del carrito del usuario actual
+  
+  // Consulta el carrito del usuario actual
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
     FROM cart_items AS ci
-    JOIN products AS p ON ci.product_id = p.id
     JOIN carts AS c ON ci.cart_id = c.id
+    JOIN products AS p ON ci.product_id = p.id
     WHERE c.user_id = $1;
   `;
   const cartItems = await sql(query, [userId]);
-
+  
   // Calcula el total
   const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -250,29 +250,33 @@ app.post('/cart/add', authMiddleware, async (req, res) => {
   const productId = req.body.product_id;
   const quantity = req.body.quantity || 1;
 
-  // Verificar si el usuario ya tiene un carrito activo
-  const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
-  let cart = await sql(cartQuery, [userId]);
+  // Obtiene el cart_id del usuario
+  const cartQuery = `
+    SELECT id FROM carts WHERE user_id = $1;
+  `;
+  const cartResult = await sql(cartQuery, [userId]);
+  const cartId = cartResult[0]?.id;
 
-  // Si no hay carrito, crearlo
-  if (cart.length === 0) {
-    const createCartQuery = `INSERT INTO carts (user_id) VALUES ($1) RETURNING id;`;
-    cart = await sql(createCartQuery, [userId]);
+  if (!cartId) {
+    // Si no existe un carrito, crea uno
+    const createCartQuery = `
+      INSERT INTO carts (user_id) VALUES ($1) RETURNING id;
+    `;
+    const createCartResult = await sql(createCartQuery, [userId]);
+    cartId = createCartResult[0].id;
   }
-  
-  const cartId = cart[0].id;
 
-  // Insertar o actualizar producto en cart_items
   const query = `
     INSERT INTO cart_items (cart_id, product_id, quantity)
     VALUES ($1, $2, $3)
     ON CONFLICT (cart_id, product_id)
-    DO UPDATE SET quantity = cart_items.quantity + $3;
+    DO UPDATE SET quantity = cart_items.quantity + EXCLUDED.quantity;  -- Usa EXCLUDED para acceder a los nuevos valores
   `;
   
   await sql(query, [cartId, productId, quantity]);
   res.redirect('/cart');
 });
+
 
 /* ---------- Actualizar Cantidad en el Carrito ---------- */
 app.post('/cart/update/:productId', authMiddleware, async (req, res) => {
