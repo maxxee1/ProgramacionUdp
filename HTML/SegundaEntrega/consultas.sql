@@ -34,9 +34,9 @@ CREATE TABLE IF NOT EXISTS cart_items (
     cart_id INT REFERENCES carts(id),
     product_id INT REFERENCES products(id),
     quantity INT DEFAULT 1,
-    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (cart_id, product_id)
 );
-
 
 INSERT INTO Products (name, Price, stock, image_path, description) VALUES
 ('Kryptonita 97%', 9000, 10, '/resources/Kryptonita97.webp', '10 grs. Kryptonita de laboratorio ultra pura.'),
