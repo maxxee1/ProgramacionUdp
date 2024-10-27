@@ -1,30 +1,3 @@
-<style>
-  body {
-      background-color: #fff;
-      color: #000;
-  }
-
-  .card {
-      background-color: #C9DABF;
-      color: #000;
-      margin-bottom: 20px;
-  }
-
-  .card-img-top {
-      object-fit: cover;
-  }
-
-  .margin-bottom {
-      margin-bottom: 50px;
-  }
-
-  .producto {
-      text-align: center;
-      margin: 20px 0;
-  }
-
-</style>
-
 <h1 class="producto">Catálogo Multiversal</h1>
 <div class="container">
   <div class="row">
@@ -36,40 +9,40 @@
             <h5 class="card-title">{{this.name}}</h5>
             <p class="card-text">{{this.description}}</p>
             <p class="card-text"><strong>Precio: ${{this.price}}</strong></p>
-            
+
             <!-- Botón para abrir el modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addToCartModal-{{this.id}}">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCartModal-{{this.id}}">
               Añadir al carrito
             </button>
+          </div>
+        </div>
+      </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="addToCartModal-{{this.id}}" tabindex="-1" aria-labelledby="addToCartLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="addToCartLabel">Añadir {{this.name}} al carrito</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form action="/cart/add" method="POST">
-                      <!-- Enviar el ID del producto -->
-                      <input type="hidden" name="product_id" value="{{this.id}}">
-                      
-                      <!-- Mostrar la cantidad disponible -->
-                      <div class="mb-3">
-                        <label for="quantity-{{this.id}}" class="form-label">Cantidad disponible: {{this.stock}}</label>
-                        <input type="number" class="form-control" id="quantity-{{this.id}}" name="quantity" min="1" max="{{this.stock}}" value="1" required>
-                      </div>
-                      
-                      <!-- Botón para enviar -->
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Añadir al carrito</button>
-                      </div>
-                    </form>
-                  </div>
+      <!-- Modal para agregar al carrito -->
+      <div class="modal fade" id="addCartModal-{{this.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Agregar {{this.name}} al carrito</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="/cart/add" method="POST">
+                <!-- Campo oculto con el ID del producto -->
+                <input type="hidden" name="product_id" value="{{this.id}}">
+                
+                <!-- Selección de cantidad -->
+                <div class="mb-3">
+                  <label for="quantity-{{this.id}}" class="form-label">Cantidad disponible: {{this.stock}}</label>
+                  <input type="number" class="form-control" id="quantity-{{this.id}}" name="quantity" min="1" max="{{this.stock}}" value="1" required>
                 </div>
-              </div>
+                
+                <!-- Pie del modal con botones -->
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary">Añadir al carrito</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -77,7 +50,3 @@
     {{/each}}
   </div>
 </div>
-
-<!-- Incluir Bootstrap -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
