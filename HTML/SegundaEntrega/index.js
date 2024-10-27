@@ -250,7 +250,7 @@ app.post('/cart/add', authMiddleware, async (req, res) => {
   const quantity = req.body.quantity || 1;
 
   const query = `
-    INSERT INTO cart (user_id, product_id, quantity)
+    INSERT INTO cart_items (user_id, product_id, quantity)
     VALUES ($1, $2, $3)
     ON CONFLICT (user_id, product_id)
     DO UPDATE SET quantity = cart.quantity + $3;
