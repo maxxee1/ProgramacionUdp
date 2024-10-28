@@ -108,6 +108,7 @@ app.get('/admin', authMiddleware, isAdminMiddleware, async (req, res) => {
   const money = await sql('SELECT SUM(amount) FROM sales');
   const total = money[0].sum;
   const products = await sql('SELECT * FROM products');
+  const images = await sql('SELECT * FROM images');
 
   res.render('admin', { total, products });
 });
