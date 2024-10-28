@@ -87,10 +87,6 @@ app.get('/product', async (req, res) => {
   res.render('catalogo', { products });
 });
 
-app.get('/cart', async (req, res) => {
-  res.render('carrito');
-});
-
 app.get('/addproduct', authMiddleware, isAdminMiddleware, async (req, res) => {
   res.render('addProduct');
 });
