@@ -49,7 +49,7 @@
 
 
 <div class="warning-box">
-  {{#if (lt total 20000)}}
+  {{#if isTotalLow}}
     <p>¡Advertencia! El total es menor a 20,000 clp, has ganado: {{total}} clp.</p>
     <img src="{{lookup images 0.path}}" alt="Imagen de advertencia">
   {{else}}
