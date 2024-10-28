@@ -1,0 +1,13 @@
+<h2>Recibo de Compra</h2>
+
+<p>Gracias por tu compra, {{user.name}}!</p> <!-- Nombre del usuario -->
+
+<ul>
+  {{#each items}}
+    <li>{{name}} - {{quantity}} x ${{price}}</li> <!-- Nombre y cantidad de productos -->
+  {{/each}}
+</ul>
+
+<p>Total gastado: ${{totalAmount}}</p> <!-- Total de la compra -->
+
+<p>ID del usuario: {{user.id}}</p> <!-- ID del usuario -->
