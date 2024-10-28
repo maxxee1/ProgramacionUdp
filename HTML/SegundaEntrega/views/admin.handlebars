@@ -50,14 +50,13 @@
 
 <div class="warning-box">
   {{#if (lt total 20000)}}
-    <p>¡Advertencia! El total es menor a 20,000 clp, has ganado:  {{total}} clp.</p>
-    <img src="{{#if (lookup images 'imagen_id')}}"{{lookup images 'path'}}{{/if}}" alt="Imagen de advertencia">
+    <p>¡Advertencia! El total es menor a 20,000 clp, has ganado: {{total}} clp.</p>
+    <img src="{{lookup images 1}}" alt="Imagen de advertencia">
   {{else}}
-    <p>¡Felicidades! Has alcanzado un total de {{total}}</p>
-    <img src="{{#if (lookup images 'otra_imagen_id')}}"{{lookup images 'path'}}{{/if}}" alt="Imagen de celebración">
+    <p>¡Felicidades! Has alcanzado un total de {{total}} clp.</p>
+    <img src="{{lookup images 2}}" alt="Imagen de celebración">
   {{/if}}
 </div>
-
 
 <table class="table table-striped">
   <thead>
