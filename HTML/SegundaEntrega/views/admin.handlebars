@@ -41,21 +41,14 @@
     border-radius: 5px;    
   }
 
-.warning-box img {
-    max-width: 80px; /* Ajustar el tamaño de la imagen en el cuadro de advertencia */
-    height: auto; 
-    display: block; 
-    margin: 10px auto; 
-  }
+
 </style>
 
 <div class="warning-box">
   {{#if isTotalLow}}
     <p>¡Advertencia! El total es menor a 20,000 clp, has ganado: {{total}} clp.</p>
-    <img src="{{images.[1].path}}" alt="Imagen de advertencia">
   {{else}}
     <p>¡Felicidades! Has alcanzado un total de {{total}} clp.</p>
-    <img src="{{images.[0].path}}" alt="Imagen de celebración">
   {{/if}}
 </div>
 
