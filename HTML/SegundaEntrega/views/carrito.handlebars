@@ -9,4 +9,9 @@
     {{/each}}
   </ul>
   <p>Total: ${{totalAmount}}</p>
+
+  <!-- Boton de pagar -->
+  <form action="/cart/checkout" method="POST">
+    <button type="submit">Pagar</button>
+  </form>
 {{/if}}
