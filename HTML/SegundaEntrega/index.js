@@ -180,7 +180,14 @@ app.post('/signup', async (req, res) => {
     const TimeLogged30 = Math.floor(Date.now() / 1000) + 30 * 60;
     const token = jwt.sign({ id, exp: TimeLogged30 }, clave);
 
-    res.cookie(AUTH_COOKIE_NAME, token, { maxAge: 60 * 30 * 1000 });
+    /*res.cookie(AUTH_COOKIE_NAME, token, { maxAge: 60 * 30 * 1000 });*/
+    res.cookie(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,      // Evita el acceso al cookie desde JavaScript
+      secure: false,       // Como estás usando HTTP, debe ser false
+      sameSite: "Lax",     // Ayuda a prevenir ataques CSRF
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // Expira en 7 días
+    });
+    
     res.redirect('/profile');
   } catch (error) {
     console.error('Error during signup:', error);
@@ -209,7 +216,14 @@ app.post('/login', async (req, res) => {
     const TimeLogged30 = Math.floor(Date.now() / 1000) + 30 * 60;
     const token = jwt.sign({ id, exp: TimeLogged30 }, clave);
 
-    res.cookie(AUTH_COOKIE_NAME, token, { maxAge: 60 * 30 * 1000 });
+    /*res.cookie(AUTH_COOKIE_NAME, token, { maxAge: 60 * 30 * 1000 });*/
+    res.cookie(AUTH_COOKIE_NAME, token, {
+      httpOnly: true,      // Evita el acceso al cookie desde JavaScript
+      secure: false,       // Como estás usando HTTP, debe ser false
+      sameSite: "Lax",     // Ayuda a prevenir ataques CSRF
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // Expira en 7 días
+    });
+    
     res.redirect(302, '/profile');
     return;
   }
