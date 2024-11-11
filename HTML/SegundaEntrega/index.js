@@ -27,6 +27,7 @@ app.use((req, res, next) => {
   res.locals.user = req.user; // Pasamos user a todas las vistas
   next();
 });
+
 const isAdminMiddleware = (req, res, next) => {
   if (!req.user || !req.user.isAdmin) {
     return res.status(403).render('unauthorized');
