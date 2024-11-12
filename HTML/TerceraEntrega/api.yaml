@@ -1,0 +1,438 @@
+openapi: 3.0.0
+info:
+  title: Proyecto WEB API
+  version: 1.0.0
+  description: Documentación de la API de Proyecto WEB
+paths:
+  /api/login:
+    post:
+      summary: Iniciar sesión
+      description: Permite a un usuario autenticarse en el sistema.
+      operationId: loginUser
+      requestBody:
+        description: Credenciales del usuario.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "profe@udp.cl"
+                password:
+                  type: string
+                  example: "12345t6clave"
+      responses:
+        '200': 
+          description: Operación exitosa.
+        '302':
+          description: Redireccionamiento.
+          headers:
+            Set-Cookie:
+              description: Token de autenticación.
+              schema:
+                type: string
+                example: token=ercvu8m9234dio3km1fj;
+            Location:
+              description: URL de redirección.
+              schema:
+                type: string
+                example: /home
+        '401':
+          description: Credenciales incorrectas.
+  /api/signup:
+    post:
+      summary: Registra al usuario
+      description: En base a un correo, contraseña y nombre, registra a un usuario retornándole una cookie y redireccionándolo a otra URL.
+      operationId: registerUser
+      requestBody:
+        description: Datos del usuario
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Jacinto"
+                email:
+                  type: string
+                  example: "profe@udp.cl"
+                password:
+                  type: string
+                  example: "12345t6clave"
+      responses:
+        '302':
+          description: Operación exitosa
+          headers:
+            Set-Cookie:
+              description: Token de sesión
+              schema:
+                type: string
+                example: "token=ercv8m923d4io3hm1f;"
+            Location:
+              description: URL de redirección
+              schema:
+                type: string
+                example: "/home"
+        '400':
+          description: El correo ya se encuentra en uso.
+  /api/products:
+    get:
+      summary: Obtener todos los productos
+      description: Devuelve una lista de todos los productos disponibles.
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: Lista de productos devuelta con éxito.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "Vamos team je"
+                    price:
+                      type: number
+                      example: 654321
+                    image:
+                      type: string
+                      example: "https://i0.wp.com/coplaco.com/wp-content/uploads/2019/04/MEMES.png?resize=1024%2C665&ssl=1"
+  /api/product/{id}:
+    get:
+      summary: Retorna la info de un producto
+      description: Retorna un producto de la tienda según su id.
+      operationId: getProductById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Producto obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Vamos team2"
+                  price:
+                    type: integer
+                    example: 765432
+                  image:
+                    type: string
+                    example: "https://pbs.twimg.com/media/GABUcWXQAAtZV6.jpg"
+        '404':
+          description: El producto no existe en la base de datos.
+  /api/admin/total:
+    get:
+      summary: Total ganado por la tienda
+      description: Retorna el total ganado por la tienda a administradores; no se puede usar por usuarios normales.
+      operationId: getTotalEarned
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      responses:
+        '200':
+          description: Se obtuvo el total ganado por la tienda exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    example: 1234569
+        '401':
+          description: El usuario no se encuentra autenticado
+        '403':
+          description: El usuario no tiene permisos para acceder a este endpoint
+  /api/admin/products:
+    post:
+      summary: Agrega un producto
+      description: Agrega un producto a la tienda; solo admins pueden usarlo.
+      operationId: addNewProduct
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      requestBody:
+        description: Datos del producto
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stock:
+                  type: integer
+                  example: 10
+                name:
+                  type: string
+                  example: "Vamos ekipocaraio"
+                price:
+                  type: integer
+                  example: 123456
+                image:
+                  type: string
+                  example: "https://pbs.twimg.com/media/GABUcWXQAAAtV6.jpg"
+                description:
+                  type: string
+                  example: "Un producto de calidad"
+      responses:
+        '200':
+          description: Producto creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+        '401':
+          description: El usuario no se encuentra autenticado
+        '403':
+          description: El usuario no tiene permisos para acceder a este endpoint
+  /api/admin/products/{id}:
+    delete:
+      summary: Elimina un producto
+      description: Elimina un producto de la tienda según su id; solo los administradores pueden usar esta operación.
+      operationId: deleteProduct
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '401':
+          description: El usuario no se encuentra autenticado
+        '403':
+          description: El usuario no tiene permisos para acceder a este endpoint
+        '404':
+          description: El producto no existe en la base de datos
+
+  /api/admin/product/{id}:
+    post:
+      summary: Modifica un producto
+      description: Modifica un producto de la tienda según su id; solo los administradores pueden usar esta operación.
+      operationId: updateProduct
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: Datos del producto
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stock:
+                  type: integer
+                  example: 10
+                name:
+                  type: string
+                  example: "Vamos ekipo 2.1"
+                price:
+                  type: integer
+                  example: 1234
+                image:
+                  type: string
+                  example: "https://pbs.twimg.com/media/GABUcWXQAAtZV6.jpg"
+                description:
+                  type: string
+                  example: "Un producto de calidad"
+      responses:
+        '200':
+          description: Producto modificado exitosamente
+        '401':
+          description: El usuario no se encuentra autenticado
+        '403':
+          description: El usuario no tiene permisos para acceder a este endpoint
+        '404':
+          description: El producto no existe en la base de datos
+
+  /api/shoppingcart:
+    get:
+      summary: Muestra los productos del carrito
+      description: Lista todos los productos que el usuario tiene en su carrito, indicando su cantidad.
+      operationId: getCartItems
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      responses:
+        '200':
+          description: La lista de productos en el carrito se ha obtenido exitosamente
+        '401':
+          description: El usuario no se encuentra autenticado
+
+  /api/shoppingcart/{id}:
+    post:
+      summary: Agrega un producto al carrito
+      description: Agrega una unidad del producto indicado en la URL al carrito del usuario.
+      operationId: addProductToCart
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      requestBody:
+        description: Datos del producto
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                quantity:
+                  type: integer
+                  example: 1
+      responses:
+        '200':
+          description: Producto agregado exitosamente
+        '400':
+          description: El producto no existe en la base de datos
+        '401':
+          description: El usuario no se encuentra autenticado
+
+  /api/shoppingcart/{productId}:
+    delete:
+      summary: Quita un producto del carrito
+      description: Reduce en 1 la cantidad de un producto del carrito; si la cantidad llega a 0, elimina el producto del carrito.
+      operationId: removeProductFromCart
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '400':
+          description: El producto no existe en el carrito
+        '401':
+          description: El usuario no se encuentra autenticado
+
+  /api/purchase:
+    post:
+      summary: Compra los productos
+      description: Realiza una compra con los productos en el carrito del usuario, eliminándolos del carrito y generando una compra en la base de datos.
+      operationId: purchaseProducts
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      responses:
+        '200':
+          description: Compra realizada exitosamente
+        '400':
+          description: El carrito se encuentra vacío
+        '401':
+          description: El usuario no se encuentra autenticado
+
+  /api/profile:
+    get:
+      summary: Muestra el perfil del usuario
+      description: Muestra el perfil del usuario, incluyendo su nombre, correo y dinero en la wallet. Esto se usará en la Entrega 4.
+      operationId: getUserProfile
+      parameters:
+        - name: token
+          in: cookie
+          required: true
+          schema:
+            type: string
+            example: "edrfvm890234i0szadjflkln34tun9"
+      responses:
+        '200':
+          description: Perfil obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: "Jacinto"
+                  email:
+                    type: string
+                    example: "example@domain.com"
+                  money:
+                    type: integer
+                    example: 123456
+        '401':
+          description: El usuario no se encuentra autenticado
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+      description: Verificación cookie-token
+
+security:
+  - cookieAuth: []
