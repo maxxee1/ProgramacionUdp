@@ -28,43 +28,61 @@ app.use((req, res, next) => {
   next();
 });
 
+
+const authMiddleware = async (req, res, next) => {
+  const token = req.cookies[AUTH_COOKIE_NAME];
+
+  if (!token) {
+    req.user = null; // No hay token, usuario no autenticado
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, clave); // Verificar el token
+    const results = await sql(
+      'SELECT id, name, money, admin FROM users WHERE id = $1',
+      [decoded.id],
+    );
+
+    if (results.length > 0) {
+      req.user = results[0]; // Usuario encontrado, asignar a `req.user`
+    } else {
+      req.user = null; // Token válido, pero usuario no encontrado
+    }
+  } catch (e) {
+    console.error('Error de autenticación:', e);
+    req.user = null; // Error al verificar token, asignar null a `req.user`
+  }
+
+  next(); // Continuar con la ejecución sin detener el flujo
+};
+
+
+
 const isAdminMiddleware = (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) {
+  if (!req.user || req.user.admin !== true) {
+    console.log(
+      'Acceso denegado: el usuario no es admin o no está autenticado',
+      req.user,
+    );
     return res.status(403).render('unauthorized');
   }
   next();
 };
 
-const authMiddleware = async (req, res, next) => {
-  const token = req.cookies[AUTH_COOKIE_NAME];
-
-  try {
-    req.user = jwt.verify(token, clave);
-    const results = await sql(
-      'SELECT id, name, money FROM users WHERE id = $1',
-      [req.user.id]
-    );
-    if (results.length > 0) {
-      req.user = results[0];
-      next();
-    } else {
-      res.render('unauthorized');
-    }
-  } catch (e) {
-    console.error('Error de autenticación:', e);
-    res.render('unauthorized');
-  }
-};
-
 /*---------- Engine Templates ----------*/
-app.engine('handlebars', engine());
+app.engine(
+  'handlebars',
+  engine(),
+);
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 app.use('/resources', express.static('resources'));
 
 /*---------- Set Endpoints ----------*/
-app.get('/', (req, res) => {
-  res.render('home');
+app.get('/', authMiddleware, async (req, res) => {
+  const user = req.user;
+  res.render('home', { user });
 });
 
 app.get('/login', (req, res) => {
@@ -78,7 +96,7 @@ app.get('/profile', authMiddleware, async (req, res) => {
   const results = await sql(query, [userId]);
   const user = results[0];
 
-  res.render('profile', user);
+  res.render('profile', { user, email: user.email, money: user.money });
 });
 
 app.get('/signup', (req, res) => {
@@ -89,35 +107,39 @@ app.get('/unauthorized', (req, res) => {
   res.render('unauthorized');
 });
 
-app.get('/product', async (req, res) => {
+app.get('/product', authMiddleware, async (req, res) => {
+  const user = req.user;
   const products = await sql('SELECT * FROM products');
-  res.render('catalogo', { products });
+  res.render('catalogo', { products, user });
 });
 
 app.get('/addproduct', authMiddleware, isAdminMiddleware, async (req, res) => {
   res.render('addProduct');
 });
 
-app.get('/adminview', (req, res) => {
-  res.render('admin');
-});
+app.get('/adminview', authMiddleware, async (req, res) => {
+  const user = req.user;
 
-app.get('/logout', (req, res) => {
-  res.cookie(AUTH_COOKIE_NAME, '', { maxAge: 1 });
-  res.send('sesion sesiada');
-});
+  if (user.admin == false) {
+    // renderizar una vista de error
+    return res.status(403).render('unauthorized');
+  }
 
-app.get('/admin', authMiddleware, isAdminMiddleware, async (req, res) => {
   const money = await sql('SELECT SUM(amount) FROM sales');
   const total = money[0].sum;
+
   const products = await sql('SELECT * FROM products');
   const isTotalLow = total < 20000;
 
-  res.render('admin', { total, products, isTotalLow });
+  res.render('admin', {
+    user,
+    total,
+    products,
+    isTotalLow,
+  });
 });
 
-app.get(
-  '/products/editar/:id',
+app.get('/products/editar/:id',
   authMiddleware,
   isAdminMiddleware,
   async (req, res) => {
@@ -128,12 +150,13 @@ app.get(
 );
 app.get('/wallet', authMiddleware, async (req, res) => {
   try {
+    const user = req.user;
     const userId = req.user.id; // Obtenemos el ID del usuario autenticado
     const query = 'SELECT money FROM users WHERE id = $1';
     const result = await sql(query, [userId]);
     const walletBalance = result[0].money;
 
-    res.render('wallet', { walletBalance });
+    res.render('wallet', { walletBalance, user });
   } catch (error) {
     console.error('Error al obtener el saldo de la wallet:', error);
     res.status(500).send('Error en el servidor');
@@ -232,6 +255,12 @@ app.post('/login', async (req, res) => {
   res.redirect('/login?error=unauthorized');
 });
 
+// Logout
+app.post('/logout', (req, res) => {
+  res.cookie(AUTH_COOKIE_NAME, '', { maxAge: 1 });
+  res.redirect('/login');
+});
+
 app.post(
   '/products/delete/:id',
   authMiddleware,
@@ -265,6 +294,7 @@ app.post(
 /* ---------- Ver el Carrito ---------- */
 app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id; // Obtenemos el ID del usuario autenticado
+  const user = req.user;
 
   console.log('User ID:', userId); // Debugging: Verificar el ID del usuario
 
@@ -282,6 +312,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
     if (cartItems.length === 0) {
       // Si no hay items en el carrito, renderizamos un mensaje adecuado
       return res.render('carrito', {
+        user,
         cartItems: [],
         totalAmount: 0,
         message: 'Tu carrito está vacío.',
@@ -298,7 +329,7 @@ app.get('/cart', authMiddleware, async (req, res) => {
     console.log('Total Amount:', totalAmount);
 
     // Renderizar la vista del carrito, pasando los items y el total
-    res.render('carrito', { cartItems, totalAmount });
+    res.render('carrito', { cartItems, totalAmount, user });
   } catch (error) {
     console.error('Error al ejecutar la consulta:', error);
     res.status(500).send('Error en el servidor');
@@ -310,6 +341,7 @@ app.post('/cart/add', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const productId = req.body.product_id;
   const quantity = req.body.quantity || 1;
+  const user = req.user;
 
   // Obtiene el cart_id del usuario
   const cartQuery = `
@@ -343,6 +375,7 @@ app.post('/cart/update/:productId', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const productId = req.params.productId;
   const quantity = req.body.quantity;
+  const user = req.user;
 
   // Consulta para obtener el carrito del usuario
   const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
@@ -355,13 +388,14 @@ app.post('/cart/update/:productId', authMiddleware, async (req, res) => {
   `;
 
   await sql(query, [quantity, cartId, productId]);
-  res.redirect('/cart');
+  res.redirect('/cart', {user});
 });
 
 /* ---------- Eliminar Producto del Carrito ---------- */
 app.post('/cart/delete/:productId', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const productId = req.params.productId;
+  const user = req.user;
 
   // Consulta para obtener el carrito del usuario
   const cartQuery = `SELECT id FROM carts WHERE user_id = $1;`;
@@ -443,7 +477,7 @@ app.post('/cart/checkout', authMiddleware, async (req, res) => {
 
     // Renderizar el recibo con los datos del usuario
     res.render('receipt', {
-      user: { id: userId, name: userName },
+      user: { id: userId, name: userName, money: userMoney - totalAmount },
       items: cartItems, // Productos en el carrito
       totalAmount, // Total de la compra
     });
@@ -454,4 +488,4 @@ app.post('/cart/checkout', authMiddleware, async (req, res) => {
 });
 
 /*---------- Use Port ----------*/
-app.listen(3000, () => console.log('fiumbaa'));
+app.listen(3000, () => console.log('http://localhost:3000'));

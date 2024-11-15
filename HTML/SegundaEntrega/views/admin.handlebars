@@ -1,71 +1,77 @@
 <style>
   .table {
-    background-color: #ffffff; /* Color de fondo blanco */
-    color: #000; /* Color de texto negro */
-    border: 2px solid #9CA986; /* Borde de la tabla */
+    background-color: #ffffff;
+    color: #000;
+    border: 2px solid #9CA986;
   }
 
   .table th {
-    background-color: #9CA986; /* Color de fondo de los encabezados */
-    color: #000; /* Color del texto en los encabezados */
+    background-color: #9CA986;
+    color: #000;
   }
 
   .table tbody tr:hover {
-    background-color: #5F6F65; /* Color al pasar el mouse sobre las filas */
+    background-color: #5F6F65;
+    color: #fff;
   }
 
   .table td,
   .table th {
-    padding: 15px; /* Espaciado interno */
+    padding: 15px;
   }
 
   .btn-danger {
-    background-color: #dc3545; /* Rojo para botón eliminar */
+    background-color: #dc3545;
     border: none;
   }
 
   .btn-success {
-    background-color: #28a745; /* Verde para botón editar */
+    background-color: #28a745;
+    border: none;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
     border: none;
   }
 
   .btn-group .btn {
-    margin-right: 5px; /* Espaciado entre botones */
+    margin-right: 5px;
   }
 
   .warning-box {
-    border: 2px solid #28a745; 
-    background-color: #d4edda; 
-    padding: 15px;  
-    margin: 20px 0; 
-    border-radius: 5px;    
+    border: 2px solid #28a745;
+    background-color: #d4edda;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 5px;
   }
-
-
 </style>
+
 
 <div class="warning-box">
   {{#if isTotalLow}}
-    <p>¡Advertencia! El total es menor a 20,000 clp, has ganado: {{total}} clp.</p>
+  <p>¡Advertencia! El total es menor a 20,000 CLP, has ganado: {{total}} CLP.</p>
   {{else}}
-    <p>¡Felicidades! Has alcanzado un total de {{total}} clp.</p>
+  <p>¡Felicidades! Has alcanzado un total de {{total}} CLP.</p>
   {{/if}}
 </div>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col"></th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Precio</th>
-      <th scope="col">
-        <a href="/addproduct" class="btn btn-primary">Nuevo Ítem</a>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    {{#each products}}
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col"></th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Precio</th>
+        <th scope="col">
+          <a href="/addproduct" class="btn btn-primary">Nuevo Ítem</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each products}}
       <tr>
         <th scope="row">{{this.id}}</th>
         <td><img src="{{this.image_path}}" class="rounded-circle" height="30" width="30" /></td>
@@ -73,15 +79,17 @@
         <td>{{this.price}}</td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-            <form action="/products/delete/{{this.id}}" method="POST">
+            <form action="/products/delete/{{this.id}}" method="POST" style="display:inline;">
               <button type="submit" class="btn btn-danger">Eliminar</button>
             </form>
-            <button type="button" class="btn btn-success">
-              <a href="/products/editar/{{this.id}}" class="text-white">Editar</a>
-            </button>
+            <a href="/products/editar/{{this.id}}" class="btn btn-success text-white">Editar</a>
           </div>
         </td>
       </tr>
-    {{/each}}
-  </tbody>
-</table>
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+
+
