@@ -296,7 +296,6 @@ app.get('/cart', authMiddleware, async (req, res) => {
   const userId = req.user.id; // Obtenemos el ID del usuario autenticado
   const user = req.user;
 
-  console.log('User ID:', userId); // Debugging: Verificar el ID del usuario
 
   const query = `
     SELECT p.id, p.name, p.price, ci.quantity
