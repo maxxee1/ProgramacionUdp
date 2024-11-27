@@ -1,4 +1,4 @@
-## Base de DAtos
+## Base de Datos
 
 > [!NOTE]
 > Aqui podras encontrar bases de datos, consultas y proyectos relacionados con bases de datos en PostgreSQL. Las bases de datos aquí creadas son simples, con fines de practicar las consultas, pero pueden ser más robustas con la adición de condiciones como: `NOT NULL`, `UNIQUE`, `CHECK`, entre otras. Los contenidos aquí incluyen una variedad de consultas, procedimientos, funciones de agregación, así como el uso de triggers, cursores, loops y ciclos.
