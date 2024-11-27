@@ -28,6 +28,7 @@ CREATE TABLE Venta (
 );
 
 
+INSERT INTO Cliente VALUES (88, 'maxxoo', 'ensueo 388', '984785058', 'valparaíso');
 INSERT INTO Cliente VALUES (1, 'Pretoriano', 'Temuco 426, Queens', '944781240', 'Santiago');
 INSERT INTO Cliente VALUES (2, 'Pectoriano', 'Gimnasio 2233, Santiago', '992548109', 'Santiago');
 INSERT INTO Cliente VALUES (3, 'Guido Meza', 'Mitnik 2245, Renca', '941228304', 'Santiago');
