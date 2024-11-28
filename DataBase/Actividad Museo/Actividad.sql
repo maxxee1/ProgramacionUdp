@@ -117,9 +117,86 @@ BEGIN
             VALUES (c_titulo, c_nombreart, c_ano, c_tipo_arte, c_precio);
         END IF;
     END LOOP;
-    
+
     CLOSE cursor_epico;
 END;
 $$;
+
+
+
+
+/*Crear un trigger que se ejecute al agregar una nueva pieza de arte, de manera que
+verifique que el precio de la pieza sea, como mınimo, 100.000. En caso de que el precio
+sea inferior, el trigger deber ́a ajustarlo automaticamente a 100.000 */
+
+CREATE OR REPLACE FUNCTION minprice()
+RETURNS TRIGGER 
+language plpgsql
+AS $$
+BEGIN
+
+        IF NEW.precio < 100000
+             NEW.precio := 100000;
+        END IF;
+
+        RETURN NEW;
+END;
+$$;
+
+CREATE TRIGGER minpriceTrigger
+BEFORE INSERT 
+ON pieza_arte
+FOR EACH ROW 
+EXECUTE FUNCTION minprice();
+
+
+
+
+CREATE OR REPLACE FUNCTION nombre_funcion_trigger()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Aquí va la lógica del trigger
+    RETURN NEW; -- O RETURN OLD, dependiendo del caso
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER nombre_del_trigger
+{ BEFORE | AFTER  } { INSERT | UPDATE | DELETE}
+ON nombre_tabla
+FOR EACH ROW 
+EXECUTE FUNCTION nombre_funcion_trigger();
+
+
+
+
+
+CREATE OR REPLACE FUNCTION procesar_datos()
+RETURNS void AS $$
+DECLARE
+    mi_cursor CURSOR FOR SELECT id, nombre FROM empleados WHERE salario > 50000;
+    c_id INT;
+    c_nombre VARCHAR(100);
+BEGIN
+    -- Abrir el cursor
+    OPEN mi_cursor;
+
+    -- Recorrer las filas del cursor
+    LOOP
+        FETCH mi_cursor INTO c_id, c_nombre;
+        EXIT WHEN NOT FOUND;
+
+        -- Ejemplo: Registrar la información en una tabla de auditoría
+        INSERT INTO auditoria_empleados (empleado_id, nombre, fecha)
+        VALUES (c_id, c_nombre, now());
+    END LOOP;
+
+    -- Cerrar el cursor
+    CLOSE mi_cursor;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+
 
 
