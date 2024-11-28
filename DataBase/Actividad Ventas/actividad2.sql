@@ -240,7 +240,7 @@ CALL addCliente(77, 'Prueba1','Ejercito Libertador', '969613993', 'Santiago');
 --2
 CALL addSale(1, 77, 98, '2099-12-12', 20);
 
--3
+--3
 CALL editCliente(1, 'Nuevo Nombre', 'Nueva Dirección 123', '987654321', 'Nueva Ciudad');
 
 --4
