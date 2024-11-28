@@ -37,14 +37,14 @@ INSERT INTO Artista(nombre, nacimiento, edad, estilo)
 VALUES
 ('maxxocrack', '2004-01-01', 20, 'inside'),
 ('matimoyo', '2000-01-01', 80, 'sagitario'),
-('profe', '0001-01-01', 1, 'god'),
+('Luchito', '0001-01-01', 1, 'god'),
 ('gabo', '1900-01-01', 88, 'goofy');
 
 INSERT INTO Pieza_arte(titulo, nombre_artista, ano, tipo_arte, precio)
 VALUES
 ('La obra maestra', 'maxxocrack', 2024, 'digital', 5000),
 ('Estilo único', 'matimoyo', 2022, 'abstracto', 3000),
-('Infinito poder', 'profe', 1, 'escultura', 1000000),
+('Infinito poder', 'Luchito', 1, 'escultura', 1000000),
 ('El payaso', 'gabo', 1950, 'pintura', 1500);
 
 INSERT INTO Grupo(id, nombre_grupo, descripcion)
