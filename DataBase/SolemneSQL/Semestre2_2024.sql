@@ -94,8 +94,17 @@ LIMIT 1;
 
 
 -- Cantidad de reacciones por tipo, ordenado con la publicacion con mas reacciones
-SELECT publicacion.id_publicacion, Reaccion.tipo_reaccion, COUNT(*) AS cantidad_reacciones
+SELECT Publicacion.id_publicacion, Reaccion.tipo_reaccion, COUNT(*) AS cantidad_reacciones
 FROM Reaccion
 JOIN Publicacion ON Reaccion.id_usuario = Publicacion.id_usuario
 GROUP BY Publicacion.id_publicacion, Reaccion.tipo_reaccion
 ORDER BY cantidad_reacciones DESC;
+
+
+-- Listar cada usuario y cantidad de publicaciones en los ultimos 7 dias (al menos 1 publicacion)
+SELECT Usuario.id_usuario, Usuario.nombre, COUNT(Publicacion.id_publicacion) AS cantidad_publicaciones
+FROM Usuario
+JOIN Publicacion ON Usuario.id_usuario = Publicacion.id_usuario
+WHERE Publicacion.fecha_publicacion BETWEEN '2024-11-22' AND '2024-11-29'
+GROUP BY Usuario.id_usuario, Usuario.nombre
+HAVING COUNT(Publicacion.id_publicacion) > 0;
