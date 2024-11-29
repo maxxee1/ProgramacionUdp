@@ -169,7 +169,6 @@ EXECUTE FUNCTION nombre_funcion_trigger();
 
 
 
-
 CREATE OR REPLACE FUNCTION procesar_datos()
 RETURNS void AS $$
 DECLARE
