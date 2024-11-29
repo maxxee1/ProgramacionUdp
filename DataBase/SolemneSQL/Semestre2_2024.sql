@@ -82,7 +82,7 @@ INSERT INTO Reaccion (id_usuario, id_publicacion, tipo_reaccion) VALUES
 (1, 4, 'dislike');
 
 
-/*----------------------- Consultas SQL -----------------------*/
+/*---------------------------- Consultas SQL ----------------------------*/
 
 -- Encontrar el nombre de usuario y cantidad de amigos del usuario con mas conexiones
 SELECT Usuario.nombre, COUNT(Amigo_de.id_usuario1) AS cantidad_amigos
@@ -101,10 +101,46 @@ GROUP BY Publicacion.id_publicacion, Reaccion.tipo_reaccion
 ORDER BY cantidad_reacciones DESC;
 
 
--- Listar cada usuario y cantidad de publicaciones en los ultimos 7 dias (al menos 1 publicacion)
+-- Listar cada usuario y cantidad de publicaciones (al menos 1 publicacion)
 SELECT Usuario.id_usuario, Usuario.nombre, COUNT(Publicacion.id_publicacion) AS cantidad_publicaciones
 FROM Usuario
 JOIN Publicacion ON Usuario.id_usuario = Publicacion.id_usuario
-WHERE Publicacion.fecha_publicacion BETWEEN '2024-11-22' AND '2024-11-29'
 GROUP BY Usuario.id_usuario, Usuario.nombre
 HAVING COUNT(Publicacion.id_publicacion) > 0;
+
+
+-- Listar cada usuario y contenido de publicaciones en los ultimos 7 dias (ordenadas por fecha)
+SELECT Usuario.id_usuario, Usuario.nombre, Publicacion.contenido
+FROM Usuario
+JOIN Publicacion ON Usuario.id_usuario = Publicacion.id_usuario
+WHERE Publicacion.fecha_publicacion BETWEEN '2024-11-22' AND '2024-11-29'
+ORDER BY Publicacion.fecha_publicacion DESC;
+
+
+-- Obtener el numero total de usuarios registrados el ultimo mes
+SELECT COUNT(id_usuario) AS cantidad_usuarios
+FROM Usuario
+WHERE DATE_PART('month', fecha_registro) = 11 AND DATE_PART('year', fecha_registro) = 2024;
+
+
+/*---------------------------- Manipulacion  ----------------------------*/
+
+--1
+ALTER TABLE Usuario
+ADD COLUMN activo BOOLEAN DEFAULT TRUE,
+ADD COLUMN rol VARCHAR(7) DEFAULT 'usuario';
+
+
+--2
+CREATE TABLE Registro_eventos (
+    id_evento INT,
+    id_usuario INT,
+    tipo_evento TEXT,
+    descripcion TEXT,
+    fecha_evento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_evento),
+    FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario)
+);
+
+
+/*---------------------------- Procedimientos Almacenados  ----------------------------*/
