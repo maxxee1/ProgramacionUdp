@@ -20,3 +20,9 @@
 ### HTML, CSS y Bootstrap
 - Semántica
 - Responsividad
+
+### PLpgSQL
+- Consultas SQL
+- Procedimientos Almacenados
+- Triggers
+- Cursores
