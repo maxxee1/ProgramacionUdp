@@ -17,6 +17,15 @@
 - Árboles
 - Grafos
 
-### HTML, CSS y Bootstrap
-- Semántica
-- Responsividad
+### JavaScript, Node.js & Herramientas
+- Rutas controladas
+- Conexion a APIs
+- Configuracion de YAML
+- Bootstrap
+- Handlebars
+
+### PLpgSQL
+- Consultas SQL
+- Procedimientos Almacenados
+- Triggers
+- Cursores
