@@ -4,13 +4,13 @@ import { verifyUserToken } from '../middleware.js';
 
 const router = Router();
 
-// Obtener carrito del usuario
+// obtener carrito del usuario
 router.get('/shoppingcart', verifyUserToken, cartController.getCart);
 
-// Agregar un producto al carrito
+// agregar un producto al carrito
 router.post('/shoppingcart/:id', verifyUserToken, cartController.addItemToCart);
 
-// Eliminar un producto del carrito
+// eliminar un producto del carrito
 router.delete('/shoppingcart/:productId', verifyUserToken, cartController.removeItemFromCart);
 
 export default router;

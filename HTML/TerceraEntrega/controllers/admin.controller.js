@@ -1,11 +1,11 @@
 import sql from '../db.js';
 
 export const adminController = {
-  // Obtener el total de ganancias y los productos
+  // saca el total de la plata en ventas
   getTotal: async (req, res) => {
     try {
       const money = await sql('SELECT SUM(amount) AS total FROM sales');
-      const total = money[0].total; // Asegúrate de que esto accede correctamente a la fila y columna
+      const total = money[0].total; // verifica que esto agarre bien la fila y columna
       res.status(200).json({ total });
     } catch (error) {
       console.error('Error al obtener las ganancias y productos:', error);
@@ -13,7 +13,7 @@ export const adminController = {
     }
   },
 
-  // Agregar un producto
+  // mete un producto nuevo a la base
   addNewProduct: async (req, res) => {
     const { stock, name, price, image_path, description } = req.body;
     try {
@@ -28,7 +28,7 @@ export const adminController = {
     }
   },
 
-  // Eliminar un producto
+  // lo elimina de bd
   deleteProduct: async (req, res) => {
     const { id } = req.params;
     try {
@@ -46,7 +46,7 @@ export const adminController = {
     }
   },
 
-  // Actualizar un producto
+  // actualiza los datos de un producto en la base
   updateProduct: async (req, res) => {
     const { id } = req.params;
     const { stock, name, price, image_path, description } = req.body;

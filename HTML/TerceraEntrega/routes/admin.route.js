@@ -4,16 +4,16 @@ import { verifyAdminToken } from '../middleware.js';
 
 const router = Router();
 
-// Obtener el total de ganancias y productos
+// obtener el total de ganancias y productos
 router.get('/admin/total', verifyAdminToken, adminController.getTotal);
 
-// Agregar un nuevo producto
+// agregar un nuevo producto
 router.post('/admin/products', verifyAdminToken, adminController.addNewProduct);
 
-// Eliminar un producto
+// eliminar un producto
 router.delete('/admin/products/:id', verifyAdminToken, adminController.deleteProduct);
 
-// Obtener un producto específico para editar
+// obtener un producto específico para editar
 router.post('/admin/product/:id', verifyAdminToken, adminController.updateProduct);
 
 

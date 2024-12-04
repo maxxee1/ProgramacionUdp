@@ -3,7 +3,7 @@ import { productsController } from '../controllers/products.controller.js';
 
 const router = Router();
 
-// Obtener todos los productos
+// obtener todos los productos
 router.get('/products', productsController.getAllProducts);
 
 // obtener un nuevo producto

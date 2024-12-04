@@ -1,7 +1,7 @@
 import sql from '../db.js';
 
 export const productsController = {
-  // Obtener todos los productos
+  // obtiene todos los productos
   getAllProducts: async (req, res) => {
     try {
       const products = await sql('SELECT * FROM products');
@@ -12,12 +12,12 @@ export const productsController = {
     }
   },
 
-  // obtener un producto
+  // obtiene un producto en especifico con su id
   getProduct: async (req, res) => { 
-    const { id } = req.params; // Obtenemos el id desde los parámetros de la ruta
+    const { id } = req.params; // es el id desde los parametros de la ruta
     try {
       const product = await sql('SELECT * FROM products WHERE id = $1', [id]);
-      
+      //en caso que no este este producto
       if (product.length > 0) {
         res.status(200).json({ message: 'Producto encontrado', product: product[0] });
       } else {

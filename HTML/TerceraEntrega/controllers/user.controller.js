@@ -1,7 +1,7 @@
 import sql from '../db.js';
 
 export const userController = {
-  // Obtener información del usuario
+  // saca la info del usuario (id, nombre, email)
   getUserInfo: async (req, res) => {
     const userId = req.user.id;
     try {
@@ -16,7 +16,7 @@ export const userController = {
     }
   },
 
-  // Actualizar información del usuario
+  // actualiza los datos del usuario
   updateUserInfo: async (req, res) => {
     const userId = req.user.id;
     const { name, email } = req.body;

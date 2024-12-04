@@ -6,7 +6,7 @@ import YAML from 'yamljs';
 
 const PORT = 3001;
 
-// - Rutas - 
+// - rutas - 
 import authRouter from './routes/auth.route.js';
 import productsRouter from './routes/products.route.js';
 import cartRouter from './routes/cart.route.js';
@@ -21,28 +21,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Configuración de Swagger
+// configuracion de Swagger
 const swaggerDocs = YAML.load('./api.yaml');
 app.use('/api/home', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-// Rutas
-// -- Autenticación
+// autenticacion
 app.use('/api', authRouter);
 
-// -- Productos
+// productos
 app.use('/api', productsRouter);
 
-// -- Carrito de compras
+// carrito de compras
 app.use('/api', cartRouter);
 
-// -- Compras
+// compras
 app.use('/api', purchaseRouter);
 
-// -- Usuario
+// usuario
 app.use('/api', userRouter);
 
-//-- Admin
+// admin
 app.use('/api', adminRouter);
 
-// Servidor
-app.listen(PORT, () => console.log('Servidor usando en http://localhost:' + PORT + '/api/home'));
+// servidor
+app.listen(PORT, () => console.log('Servidor usando el puerto: ' + PORT));

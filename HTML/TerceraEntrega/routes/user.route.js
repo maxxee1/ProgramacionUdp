@@ -4,7 +4,7 @@ import { verifyUserToken } from '../middleware.js';
 
 const router = Router();
 
-// Obtener información del usuario
+// obtener información del usuario
 router.get('/profile', verifyUserToken, userController.getUserInfo);
 
 export default router;
