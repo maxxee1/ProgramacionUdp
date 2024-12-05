@@ -144,3 +144,4 @@ CREATE TABLE Registro_eventos (
 
 
 /*---------------------------- Procedimientos Almacenados  ----------------------------*/
+CREATE OR REPLACE PROCEDURE
