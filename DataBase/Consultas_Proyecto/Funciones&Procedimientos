@@ -1,6 +1,5 @@
 /* -------------------- Informacion Casino -------------------- */
 
--- Balance todas las cajas
 CREATE OR REPLACE FUNCTION BalanceTotal()
 RETURNS DECIMAL(15,2)
 LANGUAGE plpgsql
@@ -17,7 +16,6 @@ BEGIN
 END;
 $$;
 
--- Balance de una caja por ID
 CREATE OR REPLACE FUNCTION BalanceCaja(
     f_id_caja INT
 ) RETURNS DECIMAL(15,2)
@@ -44,7 +42,6 @@ BEGIN
 END;
 $$;
 
--- Listar usuarios vetados
 CREATE OR REPLACE FUNCTION UsuariosVetados()
 RETURNS TABLE(id_user INT)
 LANGUAGE plpgsql
@@ -67,7 +64,7 @@ BEGIN
 END;
 $$;
 
---Obtener dinero por ID
+--Obtener dinero
 CREATE OR REPLACE FUNCTION ObtenerCantidadDineroUsuario(
     p_id_user INT
 )
@@ -75,34 +72,35 @@ RETURNS DECIMAL(15,2)
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    cantidad_dinero DECIMAL(15,2);
+    cant_dinero DECIMAL(15,2);
 BEGIN
  
     IF NOT EXISTS (
-        SELECT 1 FROM Users WHERE id_user = p_id_user
+        SELECT 1 FROM Users WHERE users.id_user = p_id_user
     ) THEN
         RAISE EXCEPTION 'El usuario con ID % no existe.', p_id_user;
     END IF;
 
     SELECT cantidad_dinero
-    INTO cantidad_dinero
+    INTO cant_dinero
     FROM Users
-    WHERE id_user = p_id_user;
+    WHERE users.id_user = p_id_user;
 
-    RETURN cantidad_dinero;
+    RETURN cant_dinero;
 END;
 $$;
 
 -- horas de todos los usuarios
-CREATE OR REPLACE FUNCTION ObtenerHorasActivasPorUsuario()
-RETURNS TABLE(id_user INT, horas_totales INT)
+
+CREATE OR REPLACE FUNCTION HorasActivas()
+RETURNS TABLE(id_user INT, horas_totales BIGINT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT id_user, SUM(horas_activas) AS horas_totales
+    SELECT user_caja.id_user, SUM(horas_activas) AS horas_totales
     FROM User_Caja
-    GROUP BY id_user
+    GROUP BY User_Caja.id_user
     ORDER BY horas_totales DESC;
 END;
 $$;
@@ -119,14 +117,19 @@ DECLARE
 BEGIN
 
     IF NOT EXISTS (
-        SELECT 1 FROM Users WHERE id_user = p_id_user
+        SELECT 1 FROM Users WHERE users.id_user = p_id_user
     ) THEN
         RAISE EXCEPTION 'El usuario con ID % no existe.', p_id_user;
     END IF;
 
-    SELECT COALESCE(SUM(horas_activas),0) INTO horas_totales
+    SELECT SUM(horas_activas) INTO horas_totales
     FROM User_Caja
-    WHERE id_user = p_id_user;
+    WHERE User_Caja.id_user = p_id_user;
+
+ 
+    IF horas_totales IS NULL THEN
+        RETURN 0;
+    END IF;
 
     RETURN horas_totales;
 END;
@@ -134,20 +137,20 @@ $$;
 
 --evento mas efectivo
 CREATE OR REPLACE FUNCTION ObtenerEventoConMasJugadoresNuevos()
-RETURNS TABLE(id_evento INT, jugadores_nuevos BIGINT)
+RETURNS TABLE(id_evento INT, jugadores_nuevos INT)
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT Eventos.id_evento, COUNT(User_Caja.id_user) AS jugadores_nuevos
-    FROM User_Caja
-    JOIN Eventos ON User_Caja.id_user = Eventos.id_user
-    WHERE User_Caja.horas_activas < 24
-    GROUP BY Eventos.id_evento
-    ORDER BY jugadores_nuevos DESC;
+    SELECT Eventos.id_evento, COUNT(uc.id_user) AS jugadores_nuevos
+    FROM User_Caja uc
+    JOIN Eventos e ON uc.id_user = e.id_user
+    WHERE uc.horas_activas = (SELECT MIN(horas_activas) FROM User_Caja)
+    GROUP BY e.id_evento
+    ORDER BY jugadores_nuevos DESC
+    LIMIT 1;
 END;
 $$;
-
 
 
 /* -------------------- Informacion Juego -------------------- */
