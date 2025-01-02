@@ -132,7 +132,6 @@ END;
 $$;
 
 
-
 SELECT BalanceTotal();
 
 SELECT BalanceCaja(1);
