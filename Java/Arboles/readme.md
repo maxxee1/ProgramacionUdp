@@ -6,7 +6,6 @@ Aca encontraras la implementacion de 2 arboles:
 >[!WARNING]
 >Metodos de busqueda, eliminacion y reordenamiento no estan implementados en el BST.
 
-
 Se implementaron 4 metodos para recorrer arboles
 
 * Inorder.
