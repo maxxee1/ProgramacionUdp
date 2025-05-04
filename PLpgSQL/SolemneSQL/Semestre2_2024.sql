@@ -88,7 +88,7 @@ INSERT INTO Reaccion (id_usuario, id_publicacion, tipo_reaccion) VALUES
 SELECT Usuario.nombre, COUNT(Amigo_de.id_usuario1) AS cantidad_amigos
 FROM Usuario
 JOIN Amigo_de ON Usuario.id_usuario = Amigo_de.id_usuario1
-GROUP BY id_usuario
+GROUP BY Usuario.id_usuario
 ORDER BY cantidad_amigos DESC
 LIMIT 1;
 
@@ -144,4 +144,34 @@ CREATE TABLE Registro_eventos (
 
 
 /*---------------------------- Procedimientos Almacenados  ----------------------------*/
-CREATE OR REPLACE PROCEDURE
+--1
+CREATE OR REPLACE FUNCTION Validar ()
+RETURNS TRIGGER 
+AS $$
+BEGIN
+    IF length(new.contenido) > 500 THEN
+        RAISE EXCEPTION 'Te pasaste del límite de 500 caracteres, no se pudo actualizar la descripción';
+    END IF;
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER ValidarT
+BEFORE INSERT OR UPDATE ON Publicacion
+FOR EACH ROW
+EXECUTE FUNCTION Validar();
+ 
+
+-- Como las tablas no tienen DELETE ON CASCADE se deben borrar las aparicioones manualmente en orden para no violar la relacion referencial en la base de datos
+--2
+CREATE OR REPLACE PROCEDURE Eliminar_usuario(id_p INT)
+AS $$
+BEGIN
+    DELETE FROM Reaccion WHERE id_usuario = id_p;
+    DELETE FROM Amigo_de WHERE id_usuario1 = id_p OR id_usuario2 = id_p;
+    DELETE FROM Comentario WHERE id_usuario = id_p;
+    DELETE FROM Publicacion WHERE id_usuario = id_p;
+    DELETE FROM Usuario WHERE id_usuario = id_p;
+END;
+$$ LANGUAGE plpgsql;
