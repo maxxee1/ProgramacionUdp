@@ -77,9 +77,22 @@ INSERT INTO Amigo_de (id_usuario1, id_usuario2) VALUES
 
 INSERT INTO Reaccion (id_usuario, id_publicacion, tipo_reaccion) VALUES
 (2, 1, 'like'),
-(3, 2, 'comentario'),
+(3, 1, 'comentario'),
+(4, 1, 'like'),
+(2, 1, 'comentario'),
+
+(1, 2, 'like'),
+(3, 2, 'like'),
+(4, 2, 'comentario'),
+
+(1, 3, 'comentario'),
+(2, 3, 'like'),
 (4, 3, 'like'),
-(1, 4, 'dislike');
+
+(1, 4, 'comentario'),
+(2, 4, 'like'),
+(3, 4, 'like'),
+(4, 4, 'comentario');
 
 
 /*---------------------------- Consultas SQL ----------------------------*/
@@ -94,10 +107,11 @@ LIMIT 1;
 
 
 -- Cantidad de reacciones por tipo, ordenado con la publicacion con mas reacciones
-SELECT Publicacion.id_publicacion, Reaccion.tipo_reaccion, COUNT(*) AS cantidad_reacciones
+SELECT Publicacion.id_publicacion, Reaccion.tipo_reaccion, 
+COUNT(*) AS cantidad_reacciones
 FROM Reaccion
-JOIN Publicacion ON Reaccion.id_usuario = Publicacion.id_usuario
-GROUP BY Publicacion.id_publicacion, Reaccion.tipo_reaccion
+JOIN Publicacion ON Reaccion.id_publicacion = Publicacion.id_publicacion
+GROUP BY Publicacion.id_publicacion, Publicacion.contenido, Reaccion.tipo_reaccion
 ORDER BY cantidad_reacciones DESC;
 
 
