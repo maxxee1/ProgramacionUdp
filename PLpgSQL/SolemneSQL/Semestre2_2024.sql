@@ -1,5 +1,3 @@
-
-
 /*----------------------- Creacion de las Tablas -----------------------*/
 CREATE TABLE Usuario (
     id_usuario SERIAL,
@@ -94,7 +92,6 @@ INSERT INTO Reaccion (id_usuario, id_publicacion, tipo_reaccion) VALUES
 (3, 4, 'like'),
 (4, 4, 'comentario');
 
-
 /*---------------------------- Consultas SQL ----------------------------*/
 
 -- Encontrar el nombre de usuario y cantidad de amigos del usuario con mas conexiones
@@ -127,14 +124,14 @@ HAVING COUNT(Publicacion.id_publicacion) > 0;
 SELECT Usuario.id_usuario, Usuario.nombre, Publicacion.contenido
 FROM Usuario
 JOIN Publicacion ON Usuario.id_usuario = Publicacion.id_usuario
-WHERE Publicacion.fecha_publicacion BETWEEN '2024-11-22' AND '2024-11-29'
+WHERE Publicacion.fecha_publicacion BETWEEN CURRENT_DATE - INTERVAL '7 days' AND CURRENT_DATE
 ORDER BY Publicacion.fecha_publicacion DESC;
 
 
 -- Obtener el numero total de usuarios registrados el ultimo mes
 SELECT COUNT(id_usuario) AS cantidad_usuarios
 FROM Usuario
-WHERE DATE_PART('month', fecha_registro) = 11 AND DATE_PART('year', fecha_registro) = 2024;
+WHERE DATE_PART('month', fecha_registro) = 5 AND DATE_PART('year', fecha_registro) = 2025;
 
 
 /*---------------------------- Manipulacion  ----------------------------*/
