@@ -107,12 +107,12 @@ LIMIT 1;
 
 
 -- Cantidad de reacciones por tipo, ordenado con la publicacion con mas reacciones
-SELECT Publicacion.id_publicacion, Reaccion.tipo_reaccion, 
+SELECT Publicacion.id_publicacion, Reaccion.tipo_reaccion,
 COUNT(*) AS cantidad_reacciones
 FROM Reaccion
 JOIN Publicacion ON Reaccion.id_publicacion = Publicacion.id_publicacion
-GROUP BY Publicacion.id_publicacion, Publicacion.contenido, Reaccion.tipo_reaccion
-ORDER BY cantidad_reacciones DESC;
+GROUP BY Publicacion.id_publicacion, Reaccion.tipo_reaccion
+ORDER BY COUNT(*) DESC, Publicacion.id_publicacion;
 
 
 -- Listar cada usuario y cantidad de publicaciones (al menos 1 publicacion)
